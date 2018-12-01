@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
 }
 
 
+//This class uses sockets to connect to IP addresss that you get.
+//'Change the IP address to yours' 
 class Connect2Server extends AsyncTask<String, Void, Void>{
 
     @Override
