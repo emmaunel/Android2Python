@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">android-client</string>
+    <string name="port">port #</string>
+    <string name="ip_address">IP address</string>
+    <string name="connect">connect</string>
+    <string name="status">Status: Not connected</string>
 </resources>

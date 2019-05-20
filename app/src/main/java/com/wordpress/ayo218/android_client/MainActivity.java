@@ -6,8 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-
+import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,52 +16,63 @@ import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity {
 
+    private EditText ip_addr, port;
+    public TextView status;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final EditText text = findViewById(R.id.editText);
-        Button btn = findViewById(R.id.button);
+        ip_addr = findViewById(R.id.ip);
+        port = findViewById(R.id.port);
+        status = findViewById(R.id.status);
+        Button connect = findViewById(R.id.connect);
 
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String edit = text.getText().toString();
-                new Connect2Server().execute(edit);
-                text.getText().clear();
-            }
+        connect.setOnClickListener(view -> {
+            // TODO: 5/19/2019 Verify input
+            String ip = this.ip_addr.getText().toString().trim();
+            String port = this.port.getText().toString().trim();
+
+            new Connect2Server().execute(ip, port);
         });
     }
 }
 
 
-//This class uses sockets to connect to IP addresss that you get.
+//This class uses sockets to connect to IP address that you get.
 //'Change the IP address to yours' 
 class Connect2Server extends AsyncTask<String, Void, Void>{
+
 
     @Override
     protected Void doInBackground(String... strings) {
         try {
-            String s = null;
+            String results;
             try {
-                Socket socket = new Socket("192.168.1.46", 8888);
+                Socket socket = new Socket(strings[0], Integer.parseInt(strings[1]));
 
-                Process p = Runtime.getRuntime().exec("ls");
-                BufferedReader sInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                //BufferedReader sError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-                PrintWriter out = new PrintWriter(
-                        new OutputStreamWriter(
-                                socket.getOutputStream()));
-
-                System.out.println("This is the result");
-                while ((s = sInput.readLine()) != null){
-                    System.out.println(s);
+                // if connected, good. Move to the next screen
+                if (socket.isConnected()){
+                    System.out.println("Connected");
                 }
 
+                // Sends commands to server
+                PrintWriter commands = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                out.print(strings[0]);
-                out.flush();
+                // Receives reply from server
+                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                System.out.println("This is the result");
+
+//                while ((s = sInput.readLine()) != null){
+//                    System.out.println(s);
+//                }
+//
+//
+//                out.print(strings[0]);
+//                out.flush();
             } catch (IOException e){
                 e.printStackTrace();
             }
